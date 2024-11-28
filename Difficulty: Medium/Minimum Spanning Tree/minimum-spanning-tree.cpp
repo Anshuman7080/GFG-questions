@@ -6,47 +6,86 @@ using namespace std;
 class Solution
 {
 	public:
+	
 	//Function to find sum of weights of edges of the Minimum Spanning Tree.
+	int findParent(int u,vector<int>&parent){
+	    if(u==parent[u]){
+	        return u;
+	    }
+	    
+	    return parent[u]=findParent(parent[u],parent);
+	    // path compression
+	    
+	    
+	}
+	
+	void unionByRank(int u,int v,vector<int>&parent,vector<int>&rank){
+	    
+	    int pu=findParent(u,parent);
+	    int pv=findParent(v,parent);
+	    
+	    
+	    if(rank[pu]>rank[pv]){
+	        parent[pv]=pu;
+	    }else if(rank[pu]<rank[pv]){
+	        parent[pu]=pv;
+	    }
+	    else{
+	        parent[pv]=pu;
+	        rank[pu]++;
+	    }
+	}
+	
+	
     int spanningTree(int V, vector<vector<int>> adj[])
     {
+       vector<int>parent(V);
+       // parent will help us to determine set
+       
+       vector<int>rank(V,0);
+       //rank will help us to merge set
+       
+       for(int i=0;i<V;i++){
+           parent[i]=i;
+       }
+       
+       
+       priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<pair<int,pair<int,int>>>>pq;
 
-          vector<bool>IsMst(V,0);
-          vector<int>parent(V);
-          
-          // priority queue to get the minimum weighted edge ,it will store following 
-          // information : weight,node,parent of node;
-          
-          priority_queue<pair<int ,pair<int,int>>,vector<pair<int ,pair<int,int>>>,greater<pair<int ,pair<int,int>>>>pq;
-          
-          pq.push({0,{0,-1}});
-          int cost=0;
-          
-          while(!pq.empty()){
-              int wt=pq.top().first;
-              int node=pq.top().second.first;
-              int pare=pq.top().second.second;
-              
-              pq.pop();
-              
-               if(!IsMst[node]){
-                   IsMst[node]=1;
-                   cost+=wt;
-                   
-                   parent[node]=pare;
-                   
-                   
-                   for(int j=0;j<adj[node].size();j++){
-                       if(!IsMst[adj[node][j][0]]){
-                           pq.push({adj[node][j][1],{adj[node][j][0],node}});
-                       }
-                   }
-                   
-               }
-              
-          }
 
-       return cost;
-
+        for(int i=0;i<V;i++){
+            for(int j=0;j<adj[i].size();j++){
+                pq.push({adj[i][j][1],{i,adj[i][j][0]}});
+                
+            }
+        }
+        int cost=0;
+        int edges=0;
+        
+        while(!pq.empty()){
+            int wt=pq.top().first;
+            int u=pq.top().second.first;
+            
+            int v=pq.top().second.second;
+            
+            pq.pop();
+            
+            
+            //check if they are in different set
+            
+            if(findParent(u,parent)!=findParent(v,parent)){
+                cost+=wt;
+                unionByRank(u,v,parent,rank);
+                
+                
+            }
+            
+        }
+        
+        
+        return cost;
+        
+        
     }
 };
 
