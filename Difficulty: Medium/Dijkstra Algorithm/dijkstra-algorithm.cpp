@@ -19,23 +19,22 @@ public:
         vector<int> dist(v, INT_MAX);
 
         dist[src] = 0;
+        
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>p;
+          p.push({0,src});      
 
-        int count = v;
-
-        while (count--) {
-            int node = -1;
-            int value = INT_MAX;
-            // Select a node which is not explored yet and its distance value is minimum
-            for (int i = 0; i < v; i++) {
-                if (!explored[i] && dist[i] < value) {
-                    node = i;
-                    value = dist[i];
-                }
+       
+        while (!p.empty()) {
+            
+            int node=p.top().second;
+            p.pop();
+            if(explored[node]){
+                continue;
             }
-
-            if (node == -1) break; 
+  
 
             explored[node] = true;
+            
 
             // Relax the edges
             for (int i = 0; i < adj[node].size(); i++) {
@@ -44,6 +43,7 @@ public:
 
                 if (!explored[neighbour] && dist[node] + weight < dist[neighbour]) {
                     dist[neighbour] = dist[node] + weight;
+                    p.push({dist[neighbour],neighbour});
                 }
             }
         }
