@@ -7,25 +7,32 @@ using namespace std;
 
 
 class Solution {
-  public:
+public:
     // Function to find length of longest increasing subsequence.
-    int lis(vector<int>& arr) {
-       vector<int> temp;
-       int n=arr.size();
-    temp.push_back(arr[0]);
+    int solve(vector<int>& arr, int i, int p, vector<vector<int>>& dp) {
+        if (i >= arr.size()) return 0;
 
-    for (int i = 1; i < n; i++) { 
-        if (arr[i] > temp.back()) {
-            temp.push_back(arr[i]);
-        } else {
-            int ind = distance(temp.begin(), lower_bound(temp.begin(), temp.end(), arr[i]));
-            temp[ind] = arr[i];
+       
+        if (p != -1 && dp[i][p + 1] != -1) return dp[i][p + 1];
+
+        int pick = 0;
+        if (p == -1 || arr[i] > arr[p]) {
+            pick = 1 + solve(arr, i + 1, i, dp);
         }
+        int not_pick = solve(arr, i + 1, p, dp);
+
+      
+        return dp[i][p + 1] = max(pick, not_pick);
     }
 
-    return temp.size();
+    int lis(vector<int>& arr) {
+        int n = arr.size();
+        vector<vector<int>> dp(n, vector<int>(n + 1, -1));
+        return solve(arr, 0, -1, dp);
     }
 };
+
+
 
 //{ Driver Code Starts.
 
