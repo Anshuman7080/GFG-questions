@@ -1,79 +1,37 @@
-//{ Driver Code Starts
-// Initial template for C++
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-// User function template for C++
-
 class Solution {
-  public:
-    void shortestDistance(vector<vector<int>>& matrix) {
+public:
+    void floydWarshall(vector<vector<int>> &dist) {
+        int n = dist.size();
+
+        
+        // for (int i = 0; i < n; i++) {
+        //     for (int j = 0; j < n; j++) {
+        //         if (dist[i][j] == -1) {
+        //             dist[i][j] = INT_MAX;
+        //         }
+        //     }
+        // }
+
+        // Floyd-Warshall Algorithm
+        
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                   
+                    if (dist[i][k] != 1e8 && dist[k][j] != 1e8) {
+                        dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
+                }
+            }
+        }
+
        
-       int n=matrix.size();
-       
-       for(int i=0;i<n;i++){
-           for(int j=0;j<n;j++){
-               if(matrix[i][j]==-1){
-                   matrix[i][j]=INT_MAX;
-               }
-           }
-       }
-       
-      
-      for(int k=0;k<n;k++){
-          for(int i=0;i<n;i++){
-              for(int j=0;j<n;j++){
-                  if(matrix[i][k]==INT_MAX || matrix[k][j]==INT_MAX)
-                      continue;
-                  
-                  
-                  matrix[i][j]=min(matrix[i][j],matrix[i][k]+matrix[k][j]);
-              }
-          }
-      }
-      
-        for(int i=0;i<n;i++){
-           for(int j=0;j<n;j++){
-               if(matrix[i][j]==INT_MAX){
-                   matrix[i][j]=-1;
-               }
-           }
-       }
-       
-      
-       
-       
+        // for (int i = 0; i < n; i++) {
+        //     for (int j = 0; j < n; j++) {
+        //         if (dist[i][j] == INT_MAX) {
+        //             dist[i][j] = -1;
+        //         }
+        //     }
+        // }
     }
 };
-
-//{ Driver Code Starts.
-int main() {
-    int tc;
-    cin >> tc;
-    while (tc--) {
-        int n;
-        cin >> n;
-        vector<vector<int>> matrix(n, vector<int>(n, -1));
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                cin >> matrix[i][j];
-            }
-        }
-        Solution obj;
-        obj.shortestDistance(matrix);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                cout << matrix[i][j] << " ";
-            }
-            cout << "\n";
-        }
-
-        cout << "~"
-             << "\n";
-    }
-    return 0;
-}
-// } Driver Code Ends
