@@ -1,40 +1,54 @@
 class Solution {
-  public:
-    // Function to find sum of weights of edges of the Minimum Spanning Tree.
-    int spanningTree(int V, vector<vector<int>> adj[]) {
-     int cost=0;
-     
-     vector<int>ISMST(V,0),parent(V);
-    
-   priority_queue< pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+public:
+    int findParent(int u, vector<int>& parent) {
+        if (u == parent[u]) return u;
+        return parent[u] = findParent(parent[u], parent);
+    }
 
-        pq.push({0,{0,-1}});
-        while(!pq.empty()){
-            
-            int wt=pq.top().first;
-            int node=pq.top().second.first;
-            int par=pq.top().second.second;
+    void UnionByRank(int u, int v, vector<int>& parent, vector<int>& rank) {
+        int pu = findParent(u, parent);
+        int pv = findParent(v, parent);
+        
+        if (rank[pu] > rank[pv]) {
+            parent[pv] = pu;
+        } else if (rank[pu] < rank[pv]) {
+            parent[pu] = pv;
+        } else {
+            parent[pu] = pv;
+            rank[pv]++; 
+        }
+    }
+
+    int spanningTree(int V, vector<vector<int>> adj[]) {
+        vector<int> parent(V), rank(V, 0);
+        for (int i = 0; i < V; i++) {
+            parent[i] = i;
+        }
+
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+
+        for (int i = 0; i < V; i++) {
+            for (auto& edge : adj[i]) {
+                pq.push({edge[1], {i, edge[0]}});
+            }
+        }
+
+        int cost = 0, edges = 0;
+        while (!pq.empty()) {
+            int wt = pq.top().first;
+            int u = pq.top().second.first;
+            int v = pq.top().second.second;
             pq.pop();
-            
-            if(!ISMST[node]){
-                ISMST[node]=1;
-                cost+=wt;
-                parent[node]=par;
-                
-                for(int j=0;j<adj[node].size();j++){
-                    if(!ISMST[adj[node][j][0]]){
-                      pq.push({adj[node][j][1],{adj[node][j][0],node}});  
-                    }
-                }
-                
+
+            if (findParent(u, parent) != findParent(v, parent)) {
+                cost += wt;
+                UnionByRank(u, v, parent, rank);
+                edges++;
             }
             
-            
-            
+            if (edges == V - 1) break;
         }
-        
-        
+
         return cost;
-        
     }
 };
